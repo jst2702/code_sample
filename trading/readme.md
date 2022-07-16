@@ -1,7 +1,7 @@
 
 ### trading module
 
-The trading module is for the basic portfolio rebalance functionality, necessary for an automated implementation of the \<redacted\> strategy.
+The trading module is for the basic portfolio rebalance functionality, necessary for an automated implementation of the TinyTitans strategy.
 Makes use of the alpaca brokerage and python sdk: https://github.com/alpacahq/alpaca-trade-api-python
 
 `have_portfolio` attempted to make it such that after execution, the portfolio is composed of a set of tickers, in line with the specified proportions,

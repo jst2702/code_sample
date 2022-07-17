@@ -52,7 +52,7 @@ class alpacaLimitTrader(alpacaTrader):
         rounded_total_proportion = round(df['portfolio_pct'].sum(), 5)
         assert rounded_total_proportion == 1, "sum(portfolio percent) != 1"
 
-        # sell first, then buy
+        # smaller to larger positions
         df.sort_values('portfolio_pct', ascending=True, inplace=True)
         return df
 

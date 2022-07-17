@@ -31,8 +31,9 @@ class alpacaMarketTrader(alpacaTrader):
         Returns:
             pd.DataFrame:
             'ticker': the ticker symbol
-            'current_position_equity': percent of the portfolio the ticker currently makes.
-            'desired_position_equity': percent of the portfolio the ticker is expected to make.
+            'portfolio_pct': percent of the portfolio the ticker is expected to make.
+            'current_position_equity': Current position equity of the ticker. (if any)
+            'desired_position_equity': Desired position equity of the ticker (if any)
 
 
             checks to make sure proportions total to 1
@@ -48,7 +49,7 @@ class alpacaMarketTrader(alpacaTrader):
         df['desired_position_equity'] = df['portfolio_pct'].apply(
             lambda f: self.calculate_desired_position_equity(f))
 
-        # sell first, then buy
+        # smaller to larger positions
         df.sort_values('portfolio_pct', ascending=True, inplace=True)
         return df
 

@@ -27,6 +27,40 @@ class alpacaTrader(ABC):
         """
         # add a check to make sure this is called during market hours
         pass
+    
+    def _get_position_equity_df(self, portfolio_dict: Dict[str, float]) -> pd.DataFrame:
+        """Get the dataframe that lists the tickers and the equity values for:
+        how much is currently held, how much is desired to be held.
+
+        Args:
+            portfolio_dict (Dict[str, float]): ticker to equity % dictionary
+
+        Returns:
+            pd.DataFrame:
+            'ticker': the ticker symbol
+            'portfolio_pct': percent of the portfolio the ticker is expected to make.
+            'current_position_equity': Current position equity of the ticker. (if any)
+            'desired_position_equity': Desired position equity of the ticker (if any)
+
+
+            checks to make sure proportions total to 1
+        """
+        df = pd.DataFrame({'ticker': portfolio_dict.keys(),
+                           'portfolio_pct': portfolio_dict.values()})
+
+        rounded_total_proportion = round(df['portfolio_pct'].sum(), 5)
+        assert rounded_total_proportion == 1, "sum(portfolio percent) != 1"
+
+        df['current_position_equity'] = df['ticker'].apply(
+            lambda ticker: self.get_position_equity(ticker))
+        df['desired_position_equity'] = df['portfolio_pct'].apply(
+            lambda f: self.calculate_desired_position_equity(f))
+
+        df['equity_diff'] = df['desired_position_equity'] - df['current_position_equity']
+
+        # sell, then buy
+        df.sort_values('equity_diff', ascending=True, inplace=True)
+        return df
 
     def _add_current_positions(self, portfolio_dict: dict):
         """For current positions that are not listed in the portfolio_dict,

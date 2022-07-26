@@ -28,34 +28,6 @@ class alpacaLimitTrader(alpacaTrader):
         ]
         return all(order_results)
 
-    def _get_position_equity_df(self, portfolio_dict: Dict[str, float]) -> pd.DataFrame:
-        """Get the dataframe that lists the tickers and the equity values for:
-        how much is currently held.
-
-        Args:
-            portfolio_dict (Dict[str, float]): ticker to equity % dictionary
-
-        Returns:
-            pd.DataFrame: 
-            'ticker': the ticker symbol
-            'portfolio_pct': percent of the portfolio the ticker is expected to make.
-
-            (given how many possible orders there will be, and that they are executed in sequence,
-            it seemed prudent to calculate current and desired equity for each limit order separately,
-            during its turn.)
-
-            checks to make sure proportions total to 1
-        """
-        df = pd.DataFrame({'ticker': portfolio_dict.keys(),
-                           'portfolio_pct': portfolio_dict.values()})
-
-        rounded_total_proportion = round(df['portfolio_pct'].sum(), 5)
-        assert rounded_total_proportion == 1, "sum(portfolio percent) != 1"
-
-        # smaller to larger positions
-        df.sort_values('portfolio_pct', ascending=True, inplace=True)
-        return df
-
     def _set_position(self, ticker: str, portfolio_pct: float) -> bool:
         """Take the position in the account by getting the order and
         attemping to have it filled.

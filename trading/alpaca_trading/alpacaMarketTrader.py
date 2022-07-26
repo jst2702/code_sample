@@ -21,38 +21,6 @@ class alpacaMarketTrader(alpacaTrader):
         order_results = self._submit_orders(orders)
         return all(order_results)
 
-    def _get_position_equity_df(self, portfolio_dict: Dict[str, float]) -> pd.DataFrame:
-        """Get the dataframe that lists the tickers and the equity values for:
-        how much is currently held, how much is desired to be held.
-
-        Args:
-            portfolio_dict (Dict[str, float]): ticker to equity % dictionary
-
-        Returns:
-            pd.DataFrame:
-            'ticker': the ticker symbol
-            'portfolio_pct': percent of the portfolio the ticker is expected to make.
-            'current_position_equity': Current position equity of the ticker. (if any)
-            'desired_position_equity': Desired position equity of the ticker (if any)
-
-
-            checks to make sure proportions total to 1
-        """
-        df = pd.DataFrame({'ticker': portfolio_dict.keys(),
-                           'portfolio_pct': portfolio_dict.values()})
-
-        rounded_total_proportion = round(df['portfolio_pct'].sum(), 5)
-        assert rounded_total_proportion == 1, "sum(portfolio percent) != 1"
-
-        df['current_position_equity'] = df['ticker'].apply(
-            lambda ticker: self.get_position_equity(ticker))
-        df['desired_position_equity'] = df['portfolio_pct'].apply(
-            lambda f: self.calculate_desired_position_equity(f))
-
-        # smaller to larger positions
-        df.sort_values('portfolio_pct', ascending=True, inplace=True)
-        return df
-
     def _determine_orders(self, df: pd.DataFrame) -> List[Order]:
         """For a given DataFrame, get a list of notional market orders 
         to be submitted so that afterwards, the portfolio is in the desired state.

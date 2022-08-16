@@ -1,14 +1,22 @@
 from typing import Dict, Union
 from TinyTitans.src.trading.alpaca_trading.order import Order
-from TinyTitans.src.trading.alpaca_trading.alpacaTrader import alpacaTrader
-from TinyTitans.src.trading.utils import get_last_close
+from TinyTitans.src.trading.alpaca_trading.alpacaTrader import alpacaTrader, REST
+from TinyTitans.src.trading.utils import alpaca_get_last_close
 import math
-import pandas as pd
+
+
+def check_for_close(ticker: str, api: REST):
+    try:
+        alpaca_get_last_close(ticker, api)
+        return True
+    except Exception as e:
+        print(e, ticker)
+        return False
 
 
 class alpacaLimitTrader(alpacaTrader):
 
-    def have_portfolio(self, portfolio_dict: Dict[str, float]) -> bool:
+    def have_portfolio(self, portfolio_dict: Dict[str, float]) -> Dict[str, bool]:
         """Change the state of the portfolio to reflect the given portfolio dict.
 
         Args:
@@ -22,11 +30,14 @@ class alpacaLimitTrader(alpacaTrader):
         self._add_current_positions(portfolio_dict)
         df = self._get_position_equity_df(portfolio_dict)
 
-        order_results = [
-            self._set_position(row['ticker'], row['portfolio_pct'])
+        assert all(df['ticker'].apply(lambda s: check_for_close(s, self.api)))
+
+        ticker_results = {
+            row['ticker']: self._set_position(
+                row['ticker'], row['portfolio_pct'])
             for _, row in df.iterrows()
-        ]
-        return all(order_results)
+        }
+        return ticker_results
 
     def _set_position(self, ticker: str, portfolio_pct: float) -> bool:
         """Take the position in the account by getting the order and
@@ -64,15 +75,15 @@ class alpacaLimitTrader(alpacaTrader):
 
         if des_equity < cur_equity:
             order_quantity = math.floor(
-                (cur_equity - des_equity)/get_last_close(ticker))
+                (cur_equity - des_equity)/alpaca_get_last_close(ticker, self.api))
             close_position = des_equity == 0
 
             order = Order(ticker, 'sell', quantity=order_quantity,
                           close_position=close_position) \
-                if order_quantity != 0 else None
+                if order_quantity != 0 or close_position else None
         elif des_equity > cur_equity:
             order_quantity = math.floor(
-                (des_equity - cur_equity)/get_last_close(ticker))
+                (des_equity - cur_equity)/alpaca_get_last_close(ticker, self.api))
             order = Order(ticker, 'buy', quantity=order_quantity) \
                 if order_quantity != 0 else None
         else:

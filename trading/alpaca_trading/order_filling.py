@@ -1,11 +1,11 @@
 from alpaca_trade_api.rest import REST
 from alpaca_trade_api.entity import Order as orderEntity
 from TinyTitans.src.trading.alpaca_trading.order import Order
-from TinyTitans.src.trading.utils import get_last_close
+from TinyTitans.src.trading.utils import alpaca_get_last_close
 import time
 
 
-def get_limit(ticker: str, side: str) -> float:
+def get_limit(ticker: str, side: str, api: REST) -> float:
     """Get the limit price for a buy or sell limit order
 
     Args:
@@ -15,7 +15,7 @@ def get_limit(ticker: str, side: str) -> float:
         float: limit price
     """
     # modify to get the bid instead, perhaps.
-    last = get_last_close(ticker)
+    last = alpaca_get_last_close(ticker, api)
     scaler = 0.015
     delta = (last*scaler) if side == 'buy' else -(last*scaler)
     limit = round(last + delta, 2)
@@ -95,7 +95,7 @@ class orderFiller:
             time_in_force='day',
             side=order.side,
             type='limit',
-            limit_price=str(get_limit(order.ticker, order.side)),
+            limit_price=str(get_limit(order.ticker, order.side, self.api)),
             qty=order.quantity
         )
         time.sleep(10)
@@ -193,13 +193,13 @@ class orderFiller:
         Returns:
             str: a string of the new limit price
         """
+        limit_price = float(order_entity.limit_price)
+        
         delta = (
-            float(order_entity.limit_price) * current_scaler  # type: ignore
+            limit_price * current_scaler  # type: ignore
             if order_entity.side == 'buy'
-            else - float(
-                order_entity.limit_price) * current_scaler  # type: ignore
+            else - limit_price * current_scaler  # type: ignore
         )
 
-        new_limit_price = str(
-            round(float(order_entity.limit_price) + delta))  # type: ignore
+        new_limit_price = str(round(limit_price + delta, 2))  # type: ignore
         return new_limit_price

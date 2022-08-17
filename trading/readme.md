@@ -16,7 +16,7 @@ alpaca-trade-api
 ```
 
 #### Usage
-Have an alpaca brokerage account and create `trade.env` file with the fields
+Have an alpaca brokerage account and create the `trading/trade.env` file with the fields:
 * `APCA_API_KEY_ID`
 * `APCA_API_SECRET_KEY`
 

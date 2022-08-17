@@ -7,8 +7,8 @@ Makes use of the alpaca brokerage and python sdk: https://github.com/alpacahq/al
 `have_portfolio` attempted to make it such that after execution, the portfolio is composed of a set of tickers, in line with the specified proportions,
 and only what is listed in the dictionary.
 
-#### Install
-Will use poetry, later.
+#### Installation
+(Will use poetry, later.)
 ```
 pandas
 numpy 

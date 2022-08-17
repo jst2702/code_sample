@@ -16,8 +16,9 @@ alpaca-trade-api
 ```
 
 #### Usage
-Have an alpaca brokerage account and put the `apca_api_key_id` and `apca_api_secret_key` in an `trading/alpaca_credentials.py` file
-for the `trading/example.py` file,
+Have an alpaca brokerage account and create `trade.env` file with the fields
+* `APCA_API_KEY_ID`
+* `APCA_API_SECRET_KEY`
 
 #### Future changes
 Testing of the implementation for slippage in buying and selling as well as final proportion of the portfolio after rebalancing is called.

@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jun 21 09:09:55 2022
-
-@author: 15409
-"""
 from alpaca_trading import alpacaLimitTrader
 from dotenv import load_dotenv
 import os

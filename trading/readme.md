@@ -13,6 +13,7 @@ and only what is listed in the dictionary.
 pandas
 numpy 
 alpaca-trade-api
+python-dotenv
 ```
 
 #### Usage
